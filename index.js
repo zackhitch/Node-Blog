@@ -14,20 +14,9 @@ const errorHelper = (status, message, res) => {
   res.status(status).json({ error: message });
 };
 
-// MIDDLEWARE
+// MIDDLEWARES
 const toUpper = (req, res, next) => {
-  if (req.body) {
-    req.body.name = req.body.name.toUpperCase();
-  } else {
-    userDb
-      .get(req.params.id)
-      .then(response => {
-        req.name = response.name.toUpperCase();
-      })
-      .catch(err => {
-        res.status(500).json({ message: err });
-      });
-  }
+  req.body.name = req.body.name.toUpperCase();
   next();
 };
 
@@ -87,7 +76,7 @@ server.get('/api/users/:id/posts', (req, res) => {
     });
 });
 
-server.post('/api/users', nameCheck, (req, res) => {
+server.post('/api/users', nameCheck, toUpper, (req, res) => {
   const { name } = req.body;
   const newUser = { name };
   userDb
@@ -129,7 +118,7 @@ server.delete('/api/users/:id', (req, res) => {
     });
 });
 
-server.put('/api/users/:id', nameCheck, (req, res) => {
+server.put('/api/users/:id', nameCheck, toUpper, (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
   const updatedUser = { name };
